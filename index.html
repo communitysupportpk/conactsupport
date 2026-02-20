@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<title>Call رابطہ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+font-family: Arial, sans-serif;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:18px;
+background:
+radial-gradient(900px 500px at 15% 10%, rgba(37,211,102,0.35), transparent 55%),
+radial-gradient(700px 400px at 85% 90%, rgba(7,94,84,0.35), transparent 55%),
+linear-gradient(135deg, #0b3f39, #0a6b5d, #25D366);
+}
+.card{
+width:100%;
+max-width:560px;
+background: rgba(255,255,255,0.97);
+border-radius:20px;
+box-shadow:0 14px 45px rgba(0,0,0,0.30);
+overflow:hidden;
+transition: transform 0.3s;
+}
+.card:hover{ transform: scale(1.02); }
+.topbar{
+padding:18px;
+background: linear-gradient(135deg,#075E54,#25D366);
+color:#fff;
+text-align:center;
+font-weight:900;
+font-size:18px;
+}
+.content{ padding:26px 18px; text-align:center; }
+.btn{
+width:100%;
+background:linear-gradient(135deg,#25D366,#1fb85a);
+color:#fff;
+border:none;
+border-radius:14px;
+padding:16px;
+font-size:18px;
+font-weight:900;
+cursor:pointer;
+margin-top:8px;
+transition: all 0.3s;
+}
+.btn:hover{ background:linear-gradient(135deg,#1fb85a,#25D366); transform: scale(1.05); }
+.infoBox{
+margin-top:14px;
+background:#fff;
+border:1px solid rgba(0,0,0,.08);
+border-radius:14px;
+padding:14px;
+}
+.number{
+font-weight:900;
+font-size:22px;
+color:#075E54;
+direction:ltr;
+margin-bottom:12px;
+}
+.hidden{display:none}
+.progress-bar{
+width:100%;
+height:8px;
+background:rgba(0,0,0,0.1);
+border-radius:4px;
+margin-top:10px;
+overflow:hidden;
+}
+.progress-fill{
+height:100%;
+width:0%;
+background:#25D366;
+transition: width 1s linear;
+}
+.share-buttons{ display:flex; gap:8px; justify-content:center; margin-top:10px; }
+.share-btn{
+flex:1;
+padding:12px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-weight:900;
+color:#fff;
+}
+.whatsapp{ background:#25D366; }
+.copy{ background:#075E54; }
+</style>
+</head>
+<body>
+<div class="card">
+<div class="topbar">نمائندے سے فوری رابطہ</div>
+<div class="content">
+<button class="btn" id="playBtn">▶️ START</button>
+
+<div class="infoBox hidden" id="progressBox">
+نمبر ظاہر ہونے سے پہلے انتظار کریں…
+<br />
+<b id="countdown">10</b> سیکنڈ
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="infoBox hidden" id="afterBox">
+<div class="number" id="numberText">03276134241</div>
+<button class="btn" id="callBtn">ابھی Call کریں</button>
+<div class="share-buttons">
+<button class="share-btn copy" id="copyBtn">Copy Number</button>
+<button class="share-btn whatsapp" id="whatsappBtn">WhatsApp</button>
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script>
+const chosenNumber = "03276134241";
+
+const playBtn = document.getElementById("playBtn");
+const progressBox = document.getElementById("progressBox");
+const afterBox = document.getElementById("afterBox");
+const numberText = document.getElementById("numberText");
+const callBtn = document.getElementById("callBtn");
+const countdownEl = document.getElementById("countdown");
+const progressFill = document.getElementById("progressFill");
+const copyBtn = document.getElementById("copyBtn");
+const whatsappBtn = document.getElementById("whatsappBtn");
+
+let started = false;
+
+function speakMessage(message) {
+if('speechSynthesis' in window){
+const utterance = new SpeechSynthesisUtterance(message);
+utterance.lang = 'ur-PK';
+utterance.rate = 1; // same as original
+window.speechSynthesis.speak(utterance);
+}
+}
+
+playBtn.onclick = () => {
+if(started) return;
+started = true;
+playBtn.classList.add("hidden");
+
+speakMessage("Assalamu Alaikum, 10 second baad number diya jaayega, aap usko click karke information le sakte hain.");
+
+progressBox.classList.remove("hidden");
+
+let left = 10;
+countdownEl.textContent = left;
+let progress = 0;
+
+const timer = setInterval(()=>{
+left--;
+countdownEl.textContent = left;
+progress += 100/10;
+progressFill.style.width = progress + "%";
+if(left <= 0) clearInterval(timer);
+},1000);
+
+setTimeout(()=>{
+progressBox.classList.add("hidden");
+afterBox.classList.remove("hidden");
+numberText.textContent = chosenNumber;
+speakMessage("Yeh raha aapka number: " + chosenNumber);
+if(window.confetti){ confetti({particleCount:50, spread:70, origin:{y:0.6}}); }
+},10000);
+};
+
+// Copy number
+copyBtn.addEventListener('click', ()=>{
+if(navigator.clipboard){
+navigator.clipboard.writeText(chosenNumber).then(()=>{
+alert("Number copied: " + chosenNumber);
+}).catch(()=>{
+alert("Copy failed. Use HTTPS or live server.");
+});
+}else{
+alert("Copy not supported in this browser.");
+}
+});
+
+// WhatsApp share
+whatsappBtn.addEventListener('click', ()=>{
+const msg = `نمائندے سے رابطہ کریں: ${chosenNumber}`;
+const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+window.open(url, "_blank");
+});
+
+// Call button
+callBtn.addEventListener('click', ()=>{
+window.location.href = `tel:${chosenNumber}`;
+});
+</script>
+</body>
+</html>
